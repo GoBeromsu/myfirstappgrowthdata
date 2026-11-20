@@ -282,6 +282,12 @@ if env_raw is not None:
     time_col = find_column(env, ["time", "시간", "일시", "date", "날짜"])
     if time_col is not None:
         env["_dt"] = pd.to_datetime(env[time_col], errors="coerce")
+    elif "categories" in env:
+        # 일부 센서 CSV는 시간을 YYYYMMDD_H 형식으로 기록한다.
+        parsed = pd.to_datetime(env["categories"], format="%Y%m%d_%H", errors="coerce")
+        if parsed.notna().any():
+            time_col, env["_dt"] = "categories", parsed
+    if time_col is not None:
         env = env.dropna(subset=["_dt"]).sort_values("_dt")
     for c in env_raw.columns:
         if c == time_col:
@@ -459,8 +465,8 @@ with tabs[2]:
         if not w.empty:
             mx, mn = w.loc[w[weight_col].idxmax()], w.loc[w[weight_col].idxmin()]
             k1, k2, k3 = st.columns(3)
-            k1.metric(f"🔺 {label_of(weight_col)} 최대 개체", f"#{mx[id_col]:.0f} — {mx[weight_col]:.2f} {unit_of(weight_col)}")
-            k2.metric(f"🔻 {label_of(weight_col)} 최소 개체", f"#{mn[id_col]:.0f} — {mn[weight_col]:.2f} {unit_of(weight_col)}")
+            k1.metric(f"🔺 {label_of(weight_col)} 최대 개체", f"#{w.at[mx.name, id_col]} — {mx[weight_col]:.2f} {unit_of(weight_col)}")
+            k2.metric(f"🔻 {label_of(weight_col)} 최소 개체", f"#{w.at[mn.name, id_col]} — {mn[weight_col]:.2f} {unit_of(weight_col)}")
             k3.metric("📏 최대/최소 배수", f"{mx[weight_col] / mn[weight_col]:.1f}배" if mn[weight_col] > 0 else "—")
 
         st.subheader("📋 항목별 기초 통계")
