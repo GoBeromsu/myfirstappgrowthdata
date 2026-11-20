@@ -464,8 +464,8 @@ with tabs[2]:
         if not w.empty:
             mx, mn = w.loc[w[weight_col].idxmax()], w.loc[w[weight_col].idxmin()]
             k1, k2, k3 = st.columns(3)
-            k1.metric(f"🔺 {label_of(weight_col)} 최대 개체", f"#{w.loc[mx.name, id_col]} — {mx[weight_col]:.2f} {unit_of(weight_col)}")
-            k2.metric(f"🔻 {label_of(weight_col)} 최소 개체", f"#{w.loc[mn.name, id_col]} — {mn[weight_col]:.2f} {unit_of(weight_col)}")
+            k1.metric(f"🔺 {label_of(weight_col)} 최대 개체", f"#{mx[id_col]} — {mx[weight_col]:.2f} {unit_of(weight_col)}")
+            k2.metric(f"🔻 {label_of(weight_col)} 최소 개체", f"#{mn[id_col]} — {mn[weight_col]:.2f} {unit_of(weight_col)}")
             k3.metric("📏 최대/최소 배수", f"{mx[weight_col] / mn[weight_col]:.1f}배" if mn[weight_col] > 0 else "—")
 
         st.subheader("📋 항목별 기초 통계")
